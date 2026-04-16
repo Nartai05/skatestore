@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} — ScateShopTot{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="p-3 bg-light text-center border">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 500px; object-fit: contain;">
+            {% else %}
+                <img src="https://via.placeholder.com/500x500?text=No+Photo" class="img-fluid">
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <h2 class="fw-bold text-uppercase">{{ product.name }}</h2>
+        <h4 class="text-dark fw-bold my-3">{{ product.price }} ₽</h4>
+        
+        {% if average_rating %}
+            <div class="mb-3">
+                <span class="badge bg-dark">Рейтинг: {{ average_rating|stringformat:".1f" }} / 5.0</span>
+            </div>
+        {% endif %}
+
+        <hr>
+        <p class="text-muted">{{ product.description|linebreaks }}</p>
+        
+        <div class="d-grid gap-2 mt-4">
+            <button class="btn btn-dark btn-lg rounded-0 fw-bold">В КОРЗИНУ</button>
+            <a href="{% url 'shop:add_to_favorite' product.id %}" class="btn btn-outline-dark rounded-0">❤ В ИЗБРАННОЕ</a>
+        </div>
+    </div>
+</div>
+
+<hr class="my-5">
+
+<div class="row">
+    <div class="col-md-6">
+        <h3 class="fw-bold text-uppercase mb-4">Отзывы ({{ reviews.count }})</h3>
+        {% for review in reviews %}
+            <div class="card mb-3 border-0 bg-light rounded-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ review.author.username }}</strong>
+                        <span class="text-warning">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    <small class="text-muted">{{ review.created_at|date:"d.m.Y" }}</small>
+                    <p class="mt-2 mb-0">{{ review.text }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-muted">Отзывов пока нет. Будь первым!</p>
+        {% endfor %}
+    </div>
+
+    <div class="col-md-6">
+        <div class="p-4 border shadow-sm">
+            <h4 class="fw-bold text-uppercase mb-3">Оставить отзыв</h4>
+            {% if request.user.is_authenticated %}
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in review_form %}
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-dark rounded-0 w-100 fw-bold">ОТПРАВИТЬ ОТЗЫВ</button>
+                </form>
+            {% else %}
+                <div class="alert alert-info rounded-0">
+                    Пожалуйста, <a href="{% url 'account:login' %}" class="fw-bold">войдите</a>, чтобы оставить отзыв.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

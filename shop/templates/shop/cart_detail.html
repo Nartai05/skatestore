@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Корзина — ScateShopTot{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold text-uppercase">Ваша корзина</h2>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        {% if cart %}
+            <div class="table-responsive">
+                <table class="table align-middle border">
+                    <thead class="table-light">
+                        <tr class="text-uppercase small fw-bold">
+                            <th>Товар</th>
+                            <th>Кол-во</th>
+                            <th>Цена</th>
+                            <th>Итого</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart %}
+                            {% with product=item.product %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if product.image %}
+                                            <img src="{{ product.image.url }}" alt="" style="width: 60px; height: 60px; object-fit: contain;" class="me-3">
+                                        {% endif %}
+                                        <span class="fw-bold small">{{ product.name }}</span>
+                                    </div>
+                                </td>
+                                
+                                <td>
+                                    <form action="{% url 'shop:cart_add' product.id %}" method="post" class="d-flex align-items-center">
+                                        {% csrf_token %}
+                                        <div style="width: 70px;">
+                                            {{ item.update_quantity_form.quantity }}
+                                        </div>
+                                        {{ item.update_quantity_form.override }}
+                                        <button type="submit" class="btn btn-sm btn-outline-dark ms-2" style="font-size: 0.7rem; padding: 2px 5px;">
+                                            Обновить
+                                        </button>
+                                    </form>
+                                </td>
+
+                                <td>{{ item.price }} ₽</td>
+                                <td class="fw-bold">{{ item.total_price }} ₽</td>
+                                <td>
+                                    <a href="{% url 'shop:cart_remove' product.id %}" class="text-danger text-decoration-none small">
+                                        <i class="bi bi-trash"></i> Удалить
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="py-5 text-center border bg-light">
+                <p class="text-muted">Корзина пуста.</p>
+                <a href="{% url 'shop:product_list' %}" class="btn btn-dark rounded-0 text-uppercase fw-bold">В каталог</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+        <div class="p-4 border bg-white shadow-sm">
+            <h5 class="fw-bold text-uppercase mb-4">Итого</h5>
+            <div class="d-flex justify-content-between mb-3 fs-5">
+                <span>К оплате:</span>
+                <span class="fw-bold text-danger">{{ cart.get_total_price }} ₽</span>
+            </div>
+            <div class="d-grid gap-2 mt-4">
+                <button class="btn btn-dark rounded-0 text-uppercase fw-bold py-3">Оформить заказ</button>
+                <a href="{% url 'shop:product_list' %}" class="btn btn-link text-dark text-decoration-none small text-center">Продолжить покупки</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Стиль для выпадающего списка внутри таблицы */
+    select {
+        display: block;
+        width: 100%;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0;
+    }
+</style>
+{% endblock %}
