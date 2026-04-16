@@ -18,8 +18,7 @@ SECRET_KEY = env('SECRET_KEY')
 # Берем DEBUG из .env. Если не нашли — по умолчанию False
 DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = ['qalzh.pythonanywhere.com', '127.0.0.1', 'localhost']
-
+ALLOWED_HOSTS = ['nartai05.pythonanywhere.com', 'www.nartai05.pythonanywhere.com', '127.0.0.1', 'localhost']
 # --- ПРИЛОЖЕНИЯ ---
 INSTALLED_APPS = [
     'django.contrib.admin',
